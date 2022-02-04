@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "FfxivAlarmClock (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "FfxivAlarmClock (Unpackaged)": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
+    }
+  }
+}

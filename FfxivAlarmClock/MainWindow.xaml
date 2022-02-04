@@ -1,0 +1,42 @@
+﻿<Window
+    x:Class="FfxivAlarmClock.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FfxivAlarmClock"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Margin="10" DataContext="{x:Bind ViewModel}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition MaxWidth="200"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ListView>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="NAME"/>
+                        <ProgressBar/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock>游戏时间</TextBlock>
+            <TextBlock Text="{Binding EorzeaTimeExp}" FontSize="26" Margin="0,0,0,10"/>
+            <TextBlock>本地时间</TextBlock>
+            <TextBlock Text="{Binding LocalTime}" FontSize="22"/>
+            <TextBlock Text="{Binding LocalDate}" TextAlignment="Right"/>
+        </StackPanel>
+        <Expander Grid.Row="1" Grid.ColumnSpan="2" Header="List" HorizontalAlignment="Stretch">
+            <StackPanel>
+                
+            </StackPanel>
+        </Expander>
+    </Grid>
+</Window>
