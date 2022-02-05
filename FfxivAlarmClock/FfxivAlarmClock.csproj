@@ -13,6 +13,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>portable</DebugType>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <PackageCertificateThumbprint>9583EDAE3D20EAEF9A636F09F5DCF6E427080F16</PackageCertificateThumbprint>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="27.2.1" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
+	<PackageReference Include="CsvHelper" Version="27.2.1" />
+	<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.197" />
     <PackageReference Include="Prism.Core" Version="8.1.97" />
     <Manifest Include="$(ApplicationManifest)" />
@@ -40,6 +42,8 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
+    <None Update="Data\list.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

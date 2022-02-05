@@ -12,20 +12,26 @@ namespace FfxivAlarmClock
         private static MainViewModel instance;
         public static MainViewModel Instance => instance ??= new MainViewModel();
 
+        private Models.ItemInfo[] allItems;
+
         #region 内部控制用
         internal Microsoft.UI.Dispatching.DispatcherQueue Dispatcher { private get; set; }
         public DateTimeOffset EorzeaTime { get; private set; }
         #endregion
 
         #region 显示信息用
+        public bool Ready { get; private set; }
         public string EorzeaTimeExp => EorzeaTime.ToString("HH:mm:ss");
-        public string LocalTime => DateTime.Now.ToString("t");
+        public string LocalTime => DateTime.Now.ToString("T");
         public string LocalDate => DateTime.Now.ToString("d");
+        public Models.ItemInfo[] Table { get; private set; }
+        public System.Collections.ObjectModel.ObservableCollection<Models.ItemInfo> Favorite { get; private set; } = new System.Collections.ObjectModel.ObservableCollection<Models.ItemInfo>();
         #endregion
 
         private MainViewModel() 
         {
             Task.Run(timer);
+            Init();
         }
 
         /// <summary>
@@ -36,6 +42,8 @@ namespace FfxivAlarmClock
             while (true)
             {
                 EorzeaTime = GetEorzeaTime();
+                foreach(var i in Favorite)
+                    Dispatcher.TryEnqueue(() => i.RefreshValue(EorzeaTime));
 
                 if (Dispatcher != null)
                 {
@@ -47,6 +55,37 @@ namespace FfxivAlarmClock
                 }
                 Task.Delay(1000).Wait();
             }
+        }
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        private async void Init()
+        {
+            allItems = await Models.ItemInfo.Load();
+            foreach (var i in allItems)
+            {
+                // 监视选项改变并更新列表
+                i.PropertyChanged += (sender, e) =>
+                {
+                    if (e.PropertyName == nameof(i.Checked))
+                    {
+                        Models.ItemInfo fi = Favorite.FirstOrDefault(j => j.NameJp == i.NameJp);
+                        if (i.Checked)
+                            Favorite.Add(i);
+                        else if (fi != null)
+                            Favorite.Remove(fi);
+                    }
+                };
+            }
+            Table = allItems;
+            //TODO: Favorite.Add
+            Ready = true;
+            Dispatcher.TryEnqueue(() =>
+            {
+                RaisePropertyChanged(nameof(Ready));
+                RaisePropertyChanged(nameof(Table));
+            });
         }
 
         /// <summary>
