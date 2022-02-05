@@ -24,14 +24,8 @@ namespace FfxivAlarmClock.Models
         public string NameJp { get; set; }
         public string Type { get; set; }
         public int Level { get; set; }
-        public int Starts { get; set; }
-        public int Ends { get; set; }
-        public string TimeSpan { get; set; }
         public Job Job { get; set; }
-        public string MapCn { get; set; }
-        public string MapEn { get; set; }
-        public string MapJp { get; set; }
-        public string Position { get; set; }
+        public MapInfo[] Maps { get; private set; }
 
         private bool active;
         public bool Active 
@@ -52,7 +46,8 @@ namespace FfxivAlarmClock.Models
             private set => SetProperty(ref max, value);
         }
 
-        private static readonly TimeSpan WHOLE_DAY = new TimeSpan(24, 0, 0);
+        private DateTime lastSend;
+        public event EventHandler Alert;
 
         public static async Task<ItemInfo[]> Load()
         {
@@ -78,21 +73,36 @@ namespace FfxivAlarmClock.Models
                         NameJp = csv.GetField("材料名JP"),
                         NameEn = csv.GetField("材料名EN"),
                         Level = csv.GetField<int>("等级"),
-                        Starts = csv.GetField<int>("开始ET"),
-                        Ends = csv.GetField<int>("结束ET"),
+
                         Job = (Job)jc.ConvertBack(csv.GetField("职能"), typeof(Job), null, null),
-                        MapCn = csv.GetField("地区CN"),
-                        MapJp = csv.GetField("地区JP"),
-                        MapEn = csv.GetField("地区EN"),
-                        Position = csv.GetField("具体坐标")
+                        Maps = new MapInfo[] 
+                        {
+                            new MapInfo
+                            {
+                                Starts = csv.GetField<int>("开始ET"),
+                                Ends = csv.GetField<int>("结束ET"),
+                                MapCn = csv.GetField("地区CN"),
+                                MapJp = csv.GetField("地区JP"),
+                                MapEn = csv.GetField("地区EN"),
+                                Position = csv.GetField("具体坐标")
+                            }
+                        },
                     });
                 }
             }
 
             foreach (ItemInfo i in items)
-                i.TimeSpan = string.Format("{0:00}:00 - {1:00}:00", i.Starts, i.Ends);
+                i.Maps[0].TimeSpan = string.Format("{0:00}:00 - {1:00}:00", i.Maps[0].Starts, i.Maps[0].Ends);
 
-            return items.ToArray();
+            return items
+                .GroupBy(i => i.NameJp)
+                .Select(g =>
+                {
+                    var item = g.First();
+                    item.Maps = g.SelectMany(i => i.Maps).ToArray();
+                    return item;
+                })
+                .ToArray();
         }
 
         /// <summary>
@@ -101,20 +111,19 @@ namespace FfxivAlarmClock.Models
         /// <param name="eorzea">换算艾欧泽亚时间</param>
         public void RefreshValue(DateTimeOffset eorzea)
         {
-            if (Starts < eorzea.Hour && eorzea.Hour < Ends)
+            foreach (var i in Maps)
+                i.SetValue(eorzea);
+            var map = Maps.Any(i => i.Active) ? Maps.First(i => i.Active) : Maps.OrderBy(i => i.Value).First();
+
+            Active = Maps.Any(i => i.Active);
+            Value = map.Value;
+            Maximum = map.Maximum;
+
+            // 启动通知
+            if (!Active && Value <= 300 && (DateTime.Now - lastSend).TotalSeconds > 600)
             {
-                Active = true;
-                Maximum = (Ends - Starts) * 3600;
-                Value = (eorzea.TimeOfDay - new TimeSpan(Starts, 0, 0)).TotalSeconds;
-            }
-            else
-            {
-                double offset = eorzea.Hour < Starts ?
-                    (eorzea.TimeOfDay - new TimeSpan(Starts, 0, 0)).TotalSeconds :
-                    (new TimeSpan(Starts, 0, 0) + WHOLE_DAY - eorzea.TimeOfDay).TotalSeconds;
-                Active = false;
-                Maximum = 24 * 3600;
-                Value = Maximum - offset;
+                Alert?.Invoke(this, EventArgs.Empty);
+                lastSend = DateTime.Now;
             }
         }
     }

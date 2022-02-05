@@ -29,5 +29,11 @@ namespace FfxivAlarmClock
             this.InitializeComponent();
             ViewModel.Dispatcher = DispatcherQueue;
         }
+
+        private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+                ViewModel.ExecuteQuery();
+        }
     }
 }

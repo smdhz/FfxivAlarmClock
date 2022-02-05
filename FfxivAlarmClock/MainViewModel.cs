@@ -17,6 +17,13 @@ namespace FfxivAlarmClock
         #region 内部控制用
         internal Microsoft.UI.Dispatching.DispatcherQueue Dispatcher { private get; set; }
         public DateTimeOffset EorzeaTime { get; private set; }
+        private Models.ItemInfo selected;
+        public Models.ItemInfo Selected 
+        {
+            get => selected;
+            set => SetProperty(ref selected, value);
+        }
+        public string Query {private get; set; }
         #endregion
 
         #region 显示信息用
@@ -62,9 +69,16 @@ namespace FfxivAlarmClock
         /// </summary>
         private async void Init()
         {
+            // 读取文件
             allItems = await Models.ItemInfo.Load();
+            string[] checkList = await Load();
+
             foreach (var i in allItems)
             {
+                // 同步选取
+                if(checkList.Contains(i.NameJp))
+                    i.Checked = true;
+
                 // 监视选项改变并更新列表
                 i.PropertyChanged += (sender, e) =>
                 {
@@ -75,11 +89,16 @@ namespace FfxivAlarmClock
                             Favorite.Add(i);
                         else if (fi != null)
                             Favorite.Remove(fi);
+                        Task.Run(Save);
                     }
                 };
             }
             Table = allItems;
-            //TODO: Favorite.Add
+            foreach (var i in allItems.Where(i => checkList.Contains(i.NameJp)))
+            {
+                Favorite.Add(i);
+            }
+
             Ready = true;
             Dispatcher.TryEnqueue(() =>
             {
@@ -94,5 +113,49 @@ namespace FfxivAlarmClock
         /// <returns></returns>
         private DateTimeOffset GetEorzeaTime() =>
             DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds() * 3600 / 175);
+
+        /// <summary>
+        /// 保存选项
+        /// </summary>
+        private async void Save() 
+        {
+            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            await storageFolder.CreateFileAsync("list.txt", Windows.Storage.CreationCollisionOption.ReplaceExisting);
+            await Windows.Storage.FileIO.WriteTextAsync(
+                await storageFolder.GetFileAsync("list.txt"),
+                string.Join(Environment.NewLine, Favorite.Select(i => i.NameJp)));
+        }
+
+        /// <summary>
+        /// 载入选项设定列表
+        /// </summary>
+        /// <returns></returns>
+        private async Task<string[]> Load() 
+        {
+            try
+            {
+                Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                Windows.Storage.StorageFile file = await storageFolder.GetFileAsync("list.txt");
+                string raw = await Windows.Storage.FileIO.ReadTextAsync(file);
+                return raw.Split(Environment.NewLine).ToArray();
+            }
+            catch
+            {
+                return Array.Empty<string>();
+            }
+        }
+
+        public void ExecuteQuery() 
+        {
+            if (string.IsNullOrEmpty(Query))
+            {
+                Table = allItems;
+            }
+            else
+            {
+                Table = allItems.Where(i => (i.NameCn + i.NameJp + i.NameEn).Contains(Query)).ToArray();
+            }
+            Dispatcher.TryEnqueue(() => RaisePropertyChanged(nameof(Table)));
+        }
     }
 }
