@@ -53,7 +53,6 @@ namespace FfxivAlarmClock.Models
         public MapInfo mapInline;
         private DateTime lastSend;
         public event EventHandler Alert;
-        private static int counter;
 
         /// <summary>
         /// 载入数据文件
@@ -124,13 +123,6 @@ namespace FfxivAlarmClock.Models
             Active = Maps.Any(i => i.Active);
             Value = map.Value;
             Maximum = map.Maximum;
-
-            // 启动通知
-            if (!Active && Value <= 300 && (DateTime.Now - lastSend).TotalSeconds > 600)
-            {
-                Alert?.Invoke(this, EventArgs.Empty);
-                lastSend = DateTime.Now;
-            }
         }
 
         /// <summary>
@@ -139,6 +131,27 @@ namespace FfxivAlarmClock.Models
         public void SlowRefresh() 
         {
             Maps.SortDescending();
+
+            // 启动通知
+            if (MainViewModel.Instance.EnableAlarm && !Active && Value <= 300 && (DateTime.Now - lastSend).TotalSeconds > 600)
+            {
+                Alert?.Invoke(this, EventArgs.Empty);
+                lastSend = DateTime.Now;
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:验证平台兼容性", Justification = "<挂起>")]
+        public void ShowAlert(object sender, EventArgs e)
+        {
+            MapInfo map = Maps.FirstOrDefault(i => i.Active);
+            if (map != null) 
+            {
+                new CommunityToolkit.WinUI.Notifications.ToastContentBuilder()
+                    .AddText($"{NameJp} / {map.TimeSpan}")
+                    .AddText($"{map.MapJp} ({map.MapCn}/{map.MapEn})")
+                    .AddText(map.Position)
+                    .Show();
+            }
         }
     }
 }

@@ -27,6 +27,8 @@ namespace FfxivAlarmClock
         public MainWindow()
         {
             this.InitializeComponent();
+            ExtendsContentIntoTitleBar = true;
+            SetTitleBar(TitleBar);
             ViewModel.Dispatcher = DispatcherQueue;
         }
 

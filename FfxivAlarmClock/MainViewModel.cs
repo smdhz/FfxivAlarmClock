@@ -24,6 +24,7 @@ namespace FfxivAlarmClock
             set => SetProperty(ref selected, value);
         }
         public string Query {private get; set; }
+        public bool EnableAlarm { get; set; } = true;
         #endregion
 
         #region 显示信息用
@@ -90,10 +91,6 @@ namespace FfxivAlarmClock
 
             foreach (var i in allItems)
             {
-                // 同步选取
-                if(checkList.Contains(i.NameJp))
-                    i.Checked = true;
-
                 // 监视选项改变并更新列表
                 i.PropertyChanged += (sender, e) =>
                 {
@@ -101,17 +98,24 @@ namespace FfxivAlarmClock
                     {
                         Models.ItemInfo fi = Favorite.FirstOrDefault(j => j.NameJp == i.NameJp);
                         if (i.Checked)
+                        {
                             Favorite.Add(i);
+                            i.Alert += i.ShowAlert;
+                        }
                         else if (fi != null)
+                        {
                             Favorite.Remove(fi);
+                            i.Alert -= i.ShowAlert;
+                        }
                         Task.Run(Save);
                     }
                 };
             }
+
             Table = allItems;
             foreach (var i in allItems.Where(i => checkList.Contains(i.NameJp)))
             {
-                Favorite.Add(i);
+                i.Checked = true;
             }
 
             Ready = true;
