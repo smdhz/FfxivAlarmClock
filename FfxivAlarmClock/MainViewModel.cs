@@ -107,23 +107,30 @@ namespace FfxivAlarmClock
                             Favorite.Remove(fi);
                             i.Alert -= i.ShowAlert;
                         }
-                        Task.Run(Save);
                     }
                 };
             }
+            Favorite.CollectionChanged += (sender, e) => 
+            {
+                if (Ready) Task.Run(Save);
+            };
 
             Table = allItems;
-            foreach (var i in allItems.Where(i => checkList.Contains(i.NameJp)))
+            foreach (string i in checkList)
             {
-                i.Checked = true;
+                Models.ItemInfo item = allItems.FirstOrDefault(j => j.NameJp == i);
+                if (item != null)
+                {
+                    item.Checked = true;
+                }
             }
 
-            Ready = true;
             Dispatcher.TryEnqueue(() =>
             {
                 RaisePropertyChanged(nameof(Ready));
                 RaisePropertyChanged(nameof(Table));
             });
+            Ready = true;
         }
 
         /// <summary>

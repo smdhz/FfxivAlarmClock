@@ -45,4 +45,25 @@ namespace FfxivAlarmClock.Models
             return Job.None;
         }
     }
+
+    public class JobImageConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is Job)
+            {
+                if ((Job)value == Job.Botanist)
+                    return "Assets\\Botanist.png";
+                else if ((Job)value == Job.Miner)
+                    return "Assets\\Miner.png";
+            }
+
+            return "FAIL";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

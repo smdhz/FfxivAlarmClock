@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
+using Windows.Web.Http;
 
 namespace FfxivAlarmClock.Models
 {
@@ -60,11 +61,11 @@ namespace FfxivAlarmClock.Models
         /// <returns></returns>
         public static async Task<ItemInfo[]> Load()
         {
-            Windows.Storage.StorageFolder storageFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            Windows.Storage.StorageFile list = await storageFolder.GetFileAsync("Data\\list.csv");
+            HttpClient http = new HttpClient();
+            string raw = await http.GetStringAsync(new Uri("https://www.kokuryuu.club/static/ffxiv.csv"));
             List<ItemInfo> items = new List<ItemInfo>();
 
-            using (StreamReader reader = new StreamReader(File.OpenRead(list.Path)))
+            using (StringReader reader = new StringReader(raw))
             using (CsvHelper.CsvReader csv = new CsvHelper.CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 GameVersionConverter vc = new GameVersionConverter();
@@ -133,7 +134,7 @@ namespace FfxivAlarmClock.Models
             Maps.SortDescending();
 
             // 启动通知
-            if (MainViewModel.Instance.EnableAlarm && !Active && Value <= 300 && (DateTime.Now - lastSend).TotalSeconds > 600)
+            if (MainViewModel.Instance.EnableAlarm && !Active && Maximum - Value <= 3600 && (DateTime.Now - lastSend).TotalSeconds > 600)
             {
                 Alert?.Invoke(this, EventArgs.Empty);
                 lastSend = DateTime.Now;
