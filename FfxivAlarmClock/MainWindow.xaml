@@ -9,40 +9,39 @@
     mc:Ignorable="d">
 
     <Grid Margin="10" DataContext="{x:Bind ViewModel}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" MinWidth="200"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition MinHeight="322"/>
+            <RowDefinition MinHeight="300"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <GridView IsEnabled="{Binding Ready}" ItemsSource="{Binding Favorite}">
             <GridView.Resources>
                 <model:ColorConverter x:Key="cc" />
+                <Style TargetType="GridViewItem">
+                    <Style.Setters>
+                        <Setter Property="Background" Value="WhiteSmoke"/>
+                    </Style.Setters>
+                </Style>
             </GridView.Resources>
             <GridView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="10" Background="WhiteSmoke">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="8*"/>
-                            <ColumnDefinition Width="5*"/>
-                        </Grid.ColumnDefinitions>
+                    <Grid Padding="10" Width="400" Height="200">
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition/>
-                            <RowDefinition Height="120"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Width="220">
+                        <StackPanel>
                             <TextBlock Text="{Binding NameJp}"/>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding NameCn}" FontSize="10"/>
                                 <TextBlock Text="{Binding NameEn}" FontSize="10" Margin="5,0"/>
                             </StackPanel>
                         </StackPanel>
-                        <ProgressRing Grid.Column="1" Margin="10"
+                        <!--<ProgressRing Grid.Column="1" Margin="3" IsIndeterminate="False" IsActive="True"
                                       Value="{Binding Value}" Maximum="{Binding Maximum}"
-                                      Foreground="{Binding Active, Converter={StaticResource cc}}"/>
-                        <ListView Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Maps}">
+                                      Foreground="{Binding Active, Converter={StaticResource cc}}"/>-->
+                        <ProgressBar Grid.Row="1" Margin="0,5" Value="{Binding Value}" Maximum="{Binding Maximum}" Foreground="{Binding Active, Converter={StaticResource cc}}"/>
+                        <ListView Grid.Row="2" ItemsSource="{Binding Maps}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Padding="3">
@@ -67,33 +66,34 @@
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
-        <Border Grid.Column="1" Padding="30" CornerRadius="5"
-                    VerticalAlignment="Center" HorizontalAlignment="Center" Background="MidnightBlue">
-            <StackPanel >
-                <StackPanel.Resources>
-                    <Style TargetType="TextBlock">
-                        <Style.Setters>
-                            <Setter Property="Foreground" Value="White"></Setter>
-                        </Style.Setters>
-                    </Style>
-                </StackPanel.Resources>
-                <TextBlock>游戏时间</TextBlock>
-                <TextBlock Text="{Binding EorzeaTimeExp}" FontSize="28" Margin="0,0,0,10"/>
-                <TextBlock>本地时间</TextBlock>
-                <TextBlock Text="{Binding LocalTime}" FontSize="22"/>
-                <TextBlock Text="{Binding LocalDate}" TextAlignment="Right"/>
-            </StackPanel>
-        </Border>
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="8*"/>
                 <ColumnDefinition Width="5*"/>
             </Grid.ColumnDefinitions>
-            <ListView ItemsSource="{Binding Table}" IsEnabled="{Binding Ready}" SelectedItem="{Binding Selected, Mode=TwoWay}" SelectionMode="Single">
+            <Border Padding="30" Margin="10,0" Grid.RowSpan="2" CornerRadius="5" Background="MidnightBlue">
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock">
+                            <Style.Setters>
+                                <Setter Property="Foreground" Value="White"></Setter>
+                            </Style.Setters>
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock>游戏时间</TextBlock>
+                    <TextBlock Text="{Binding EorzeaTimeExp}" FontSize="28" Margin="0,0,0,20"/>
+                    <TextBlock>本地时间</TextBlock>
+                    <TextBlock Text="{Binding LocalTime}" FontSize="22"/>
+                    <TextBlock Text="{Binding LocalDate}" TextAlignment="Right"/>
+                </StackPanel>
+            </Border>
+            <ListView ItemsSource="{Binding Table}" IsEnabled="{Binding Ready}" Grid.Column="1"
+                      SelectedItem="{Binding Selected, Mode=TwoWay}" SelectionMode="Single">
                 <ListView.Resources>
                     <model:JobConverter x:Key="jc"/>
                 </ListView.Resources>
@@ -119,8 +119,8 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <ListView Grid.Column="1" ItemsSource="{Binding Selected.Maps}">
-                <ListView.ItemTemplate>
+            <GridView Grid.Column="2" Grid.RowSpan="2" ItemsSource="{Binding Selected.Maps}" Background="WhiteSmoke">
+                <GridView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="5">
                             <TextBlock Text="{Binding MapJp}"/>
@@ -131,9 +131,9 @@
                             <TextBlock Margin="10,0" Text="{Binding TimeSpan}" FontSize="22"/>
                         </StackPanel>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <TextBox Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Query,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" KeyDown="TextBox_KeyDown"/>
+                </GridView.ItemTemplate>
+            </GridView>
+            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Query,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" KeyDown="TextBox_KeyDown"/>
         </Grid>
     </Grid>
 </Window>

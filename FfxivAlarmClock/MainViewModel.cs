@@ -37,14 +37,15 @@ namespace FfxivAlarmClock
 
         private MainViewModel() 
         {
-            Task.Run(timer);
+            Task.Run(FastTimer);
+            Task.Run(SlowTimer);
             Init();
         }
 
         /// <summary>
         /// 事件处理用计时器
         /// </summary>
-        private void timer() 
+        private void FastTimer() 
         {
             while (true)
             {
@@ -61,6 +62,20 @@ namespace FfxivAlarmClock
                     });
                 }
                 Task.Delay(1000).Wait();
+            }
+        }
+        
+        /// <summary>
+        /// 非重要刷新用计时器
+        /// </summary>
+        private void SlowTimer() 
+        {
+            while (true)
+            {
+                foreach (var i in Favorite)
+                    Dispatcher.TryEnqueue(() => i.SlowRefresh());
+
+                Task.Delay(20000).Wait();
             }
         }
 
@@ -145,6 +160,9 @@ namespace FfxivAlarmClock
             }
         }
 
+        /// <summary>
+        /// 查询列表
+        /// </summary>
         public void ExecuteQuery() 
         {
             if (string.IsNullOrEmpty(Query))

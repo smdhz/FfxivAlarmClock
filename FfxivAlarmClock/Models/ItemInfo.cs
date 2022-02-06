@@ -1,6 +1,7 @@
 ﻿using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,9 @@ using Windows.Storage.Streams;
 
 namespace FfxivAlarmClock.Models
 {
+    /// <summary>
+    /// 道具信息
+    /// </summary>
     internal class ItemInfo : BindableBase
     {
         private bool chk;
@@ -25,7 +29,7 @@ namespace FfxivAlarmClock.Models
         public string Type { get; set; }
         public int Level { get; set; }
         public Job Job { get; set; }
-        public MapInfo[] Maps { get; private set; }
+        public ObservableCollection<MapInfo> Maps { get; private set; }
 
         private bool active;
         public bool Active 
@@ -46,9 +50,15 @@ namespace FfxivAlarmClock.Models
             private set => SetProperty(ref max, value);
         }
 
+        public MapInfo mapInline;
         private DateTime lastSend;
         public event EventHandler Alert;
+        private static int counter;
 
+        /// <summary>
+        /// 载入数据文件
+        /// </summary>
+        /// <returns></returns>
         public static async Task<ItemInfo[]> Load()
         {
             Windows.Storage.StorageFolder storageFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
@@ -73,47 +83,43 @@ namespace FfxivAlarmClock.Models
                         NameJp = csv.GetField("材料名JP"),
                         NameEn = csv.GetField("材料名EN"),
                         Level = csv.GetField<int>("等级"),
-
                         Job = (Job)jc.ConvertBack(csv.GetField("职能"), typeof(Job), null, null),
-                        Maps = new MapInfo[] 
+                        mapInline = new MapInfo
                         {
-                            new MapInfo
-                            {
-                                Starts = csv.GetField<int>("开始ET"),
-                                Ends = csv.GetField<int>("结束ET"),
-                                MapCn = csv.GetField("地区CN"),
-                                MapJp = csv.GetField("地区JP"),
-                                MapEn = csv.GetField("地区EN"),
-                                Position = csv.GetField("具体坐标")
-                            }
-                        },
+                            Starts = csv.GetField<int>("开始ET"),
+                            Ends = csv.GetField<int>("结束ET"),
+                            MapCn = csv.GetField("地区CN"),
+                            MapJp = csv.GetField("地区JP"),
+                            MapEn = csv.GetField("地区EN"),
+                            Position = csv.GetField("具体坐标")
+                        }
                     });
                 }
             }
 
             foreach (ItemInfo i in items)
-                i.Maps[0].TimeSpan = string.Format("{0:00}:00 - {1:00}:00", i.Maps[0].Starts, i.Maps[0].Ends);
+                i.mapInline.TimeSpan = string.Format("{0:00}:00 - {1:00}:00", i.mapInline.Starts, i.mapInline.Ends);
 
             return items
                 .GroupBy(i => i.NameJp)
                 .Select(g =>
                 {
                     var item = g.First();
-                    item.Maps = g.SelectMany(i => i.Maps).ToArray();
+                    item.Maps = new ObservableCollection<MapInfo>(g.Select(i => i.mapInline));
                     return item;
                 })
                 .ToArray();
         }
 
         /// <summary>
-        /// 计算进度
+        /// 计算进度（实时）
         /// </summary>
         /// <param name="eorzea">换算艾欧泽亚时间</param>
         public void RefreshValue(DateTimeOffset eorzea)
         {
             foreach (var i in Maps)
                 i.SetValue(eorzea);
-            var map = Maps.Any(i => i.Active) ? Maps.First(i => i.Active) : Maps.OrderBy(i => i.Value).First();
+            var map = Maps.Any(i => i.Active) ? Maps.First(i => i.Active) : Maps.OrderByDescending(i => i.Value).First();
 
             Active = Maps.Any(i => i.Active);
             Value = map.Value;
@@ -125,6 +131,14 @@ namespace FfxivAlarmClock.Models
                 Alert?.Invoke(this, EventArgs.Empty);
                 lastSend = DateTime.Now;
             }
+        }
+
+        /// <summary>
+        /// 更新数据（低频率）
+        /// </summary>
+        public void SlowRefresh() 
+        {
+            Maps.SortDescending();
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace FfxivAlarmClock.Models
 {
-    internal class MapInfo : BindableBase
+    internal class MapInfo : BindableBase, IComparable<MapInfo>
     {
         private static readonly TimeSpan WHOLE_DAY = new TimeSpan(24, 0, 0);
 
@@ -62,6 +63,34 @@ namespace FfxivAlarmClock.Models
                 Maximum = 24 * 3600;
                 Value = 24 * 3600 - offset;
             }
+        }
+
+        /// <summary>
+        /// 定义比较方法
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public int CompareTo(MapInfo other)
+        {
+            if (Active && !other.Active)
+                return int.MaxValue;
+            else if (!Active && other.Active)
+                return int.MinValue;
+            else
+                return Value.CompareTo(other.Value);
+        }
+    }
+
+    /// <summary>
+    /// 强制排序支持
+    /// </summary>
+    internal static class ObservableCollectionSorter 
+    {
+        public static void SortDescending<T>(this ObservableCollection<T> collection) where T : IComparable<T>
+        {
+            List<T> sorted = collection.OrderByDescending(x => x).ToList();
+            for (int i = 0; i < sorted.Count(); i++)
+                collection.Move(collection.IndexOf(sorted[i]), i);
         }
     }
 }
