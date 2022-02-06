@@ -134,7 +134,7 @@ namespace FfxivAlarmClock.Models
             Maps.SortDescending();
 
             // 启动通知
-            if (MainViewModel.Instance.EnableAlarm && !Active && Maximum - Value <= 3600 && (DateTime.Now - lastSend).TotalSeconds > 600)
+            if (MainViewModel.Instance.EnableAlarm && !Active && Maximum - Value <= 3600 && (DateTime.Now - lastSend).TotalSeconds > 120)
             {
                 Alert?.Invoke(this, EventArgs.Empty);
                 lastSend = DateTime.Now;
@@ -144,7 +144,7 @@ namespace FfxivAlarmClock.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:验证平台兼容性", Justification = "<挂起>")]
         public void ShowAlert(object sender, EventArgs e)
         {
-            MapInfo map = Maps.FirstOrDefault(i => i.Active);
+            MapInfo map = Maps.FirstOrDefault();
             if (map != null) 
             {
                 new CommunityToolkit.WinUI.Notifications.ToastContentBuilder()

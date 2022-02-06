@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="e7fc022d-f57a-4775-a49b-73a4e8c55127"
-    Publisher="CN=smdhz"
+    Name="33257Monkeysoft.FF14"
+    Publisher="CN=15D41633-DCC0-41F5-B8D5-03914B475477"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>FfxivAlarmClock</DisplayName>
-    <PublisherDisplayName>smdhz</PublisherDisplayName>
+    <DisplayName>FF14采集提醒</DisplayName>
+    <PublisherDisplayName>Monkeysoft</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -46,8 +46,8 @@
       </uap:VisualElements>
     </Application>
   </Applications>
-
-  <Capabilities>
-    <rescap:Capability Name="runFullTrust" />
+  
+  <Capabilities>  
+    <Capability Name="internetClient"/>
   </Capabilities>
 </Package>

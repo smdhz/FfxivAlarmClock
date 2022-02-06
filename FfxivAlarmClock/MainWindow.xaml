@@ -11,8 +11,8 @@
     <Grid DataContext="{x:Bind ViewModel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
-            <RowDefinition MinHeight="300"/>
-            <RowDefinition/>
+            <RowDefinition Height="8*" MinHeight="300"/>
+            <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" x:Name="TitleBar">
             <Image Stretch="UniformToFill" Margin="3" Source="Assets\Square44x44Logo.scale-100.png"/>
