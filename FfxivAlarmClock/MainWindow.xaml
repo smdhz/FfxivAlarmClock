@@ -11,8 +11,8 @@
     <Grid DataContext="{x:Bind ViewModel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="8*" MinHeight="300"/>
-            <RowDefinition Height="5*"/>
+            <RowDefinition MinHeight="300"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" x:Name="TitleBar">
             <Image Stretch="UniformToFill" Margin="3" Source="Assets\Square44x44Logo.scale-100.png"/>
@@ -76,77 +76,79 @@
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
-        <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="8*"/>
-                <ColumnDefinition Width="5*"/>
-            </Grid.ColumnDefinitions>
-            <Border Padding="30" Grid.RowSpan="2" CornerRadius="5" Background="DarkSlateBlue">
-                <StackPanel VerticalAlignment="Center">
-                    <StackPanel.Resources>
-                        <Style TargetType="TextBlock">
-                            <Style.Setters>
-                                <Setter Property="Foreground" Value="White"></Setter>
-                            </Style.Setters>
-                        </Style>
-                    </StackPanel.Resources>
-                    <TextBlock>游戏时间</TextBlock>
-                    <TextBlock Text="{Binding EorzeaTimeExp}" FontSize="28" Margin="0,0,0,20"/>
-                    <TextBlock>本地时间</TextBlock>
-                    <TextBlock Text="{Binding LocalTime}" FontSize="22"/>
-                    <TextBlock Text="{Binding LocalDate}" TextAlignment="Right"/>
-                </StackPanel>
-            </Border>
-            <ListView ItemsSource="{Binding Table}" IsEnabled="{Binding Ready}" Grid.Column="1"
+        <Expander Header="信息查询和设置" Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsExpanded="True">
+            <Grid Height="300">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <Border Padding="30" Grid.RowSpan="2" CornerRadius="5" Background="DarkSlateBlue">
+                    <StackPanel VerticalAlignment="Center">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock">
+                                <Style.Setters>
+                                    <Setter Property="Foreground" Value="White"></Setter>
+                                </Style.Setters>
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock>游戏时间</TextBlock>
+                        <TextBlock Text="{Binding EorzeaTimeExp}" FontSize="28" Margin="0,0,0,20"/>
+                        <TextBlock>本地时间</TextBlock>
+                        <TextBlock Text="{Binding LocalTime}" FontSize="22"/>
+                        <TextBlock Text="{Binding LocalDate}" TextAlignment="Right"/>
+                    </StackPanel>
+                </Border>
+                <ListView ItemsSource="{Binding Table}" IsEnabled="{Binding Ready}" Grid.Column="1"
                       SelectedItem="{Binding Selected, Mode=TwoWay}" SelectionMode="Single">
-                <ListView.Resources>
-                    <model:JobConverter x:Key="jc"/>
-                </ListView.Resources>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Padding="3">
-                            <CheckBox IsChecked="{Binding Checked, Mode=TwoWay}" Width="60"/>
-                            <StackPanel Margin="10,0" Width="220">
-                                <TextBlock Text="{Binding NameJp}"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding NameCn}" FontSize="10"/>
-                                    <TextBlock Text="{Binding NameEn}" FontSize="10" Margin="5,0"/>
+                    <ListView.Resources>
+                        <model:JobConverter x:Key="jc"/>
+                    </ListView.Resources>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Padding="3">
+                                <CheckBox IsChecked="{Binding Checked, Mode=TwoWay}" Width="60"/>
+                                <StackPanel Margin="10,0" Width="220">
+                                    <TextBlock Text="{Binding NameJp}"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding NameCn}" FontSize="10"/>
+                                        <TextBlock Text="{Binding NameEn}" FontSize="10" Margin="5,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Version}" FontSize="10"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Job, Converter={StaticResource jc}}"/>
+                                        <TextBlock Text="{Binding Level}" Margin="10,0"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </StackPanel>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Version}" FontSize="10"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <GridView Grid.Column="2" ItemsSource="{Binding Selected.Maps}" Background="WhiteSmoke" Padding="10">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="5">
+                                <TextBlock Text="{Binding MapJp}"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Job, Converter={StaticResource jc}}"/>
-                                    <TextBlock Text="{Binding Level}" Margin="10,0"/>
+                                    <TextBlock Text="{Binding MapCn}" FontSize="10"/>
+                                    <TextBlock Text="{Binding MapEn}" FontSize="10" Margin="5,0"/>
                                 </StackPanel>
+                                <TextBlock Margin="10,0" Text="{Binding TimeSpan}" FontSize="22"/>
                             </StackPanel>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <GridView Grid.Column="2" ItemsSource="{Binding Selected.Maps}" Background="WhiteSmoke" Padding="10">
-                <GridView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Margin="5">
-                            <TextBlock Text="{Binding MapJp}"/>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding MapCn}" FontSize="10"/>
-                                <TextBlock Text="{Binding MapEn}" FontSize="10" Margin="5,0"/>
-                            </StackPanel>
-                            <TextBlock Margin="10,0" Text="{Binding TimeSpan}" FontSize="22"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </GridView.ItemTemplate>
-            </GridView>
-            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Query,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" KeyDown="TextBox_KeyDown"/>
-            <StackPanel Orientation="Horizontal" Grid.Row="1"  Grid.Column="2" Padding="10,0" Background="Gray">
-                <CheckBox IsChecked="{Binding EnableAlarm}" HorizontalAlignment="Center">启用通知</CheckBox>
-            </StackPanel>
-        </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+                <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Query,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" KeyDown="TextBox_KeyDown"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="1"  Grid.Column="2" Padding="10,0" Background="Gray">
+                    <CheckBox IsChecked="{Binding EnableAlarm}" HorizontalAlignment="Center">启用通知</CheckBox>
+                </StackPanel>
+            </Grid>
+        </Expander>
     </Grid>
 </Window>
