@@ -25,6 +25,12 @@ namespace FfxivAlarmClock
         }
         public string Query {private get; set; }
         public bool EnableAlarm { get; set; } = true;
+        private bool small;
+        public bool SmallIcon
+        {
+            get => small;
+            set => SetProperty(ref small, value);
+        }
         #endregion
 
         #region 显示信息用

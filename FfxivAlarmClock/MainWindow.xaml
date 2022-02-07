@@ -9,6 +9,9 @@
     mc:Ignorable="d">
 
     <Grid DataContext="{x:Bind ViewModel}">
+        <Grid.Resources>
+            <model:EnableConverter x:Key="ec"/>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition MinHeight="300"/>
@@ -19,63 +22,100 @@
             <TextBlock FontWeight="Bold" VerticalAlignment="Center">勤劳的兔兔</TextBlock>
             <TextBlock Margin="10,0" VerticalAlignment="Center">FFXIV 采集信息提醒程序</TextBlock>
         </StackPanel>
-        <GridView IsEnabled="{Binding Ready}" ItemsSource="{Binding Favorite}" Grid.Row="1" Padding="10" CanReorderItems="True" AllowDrop="True">
-            <GridView.Resources>
-                <model:ColorConverter x:Key="cc" />
-                <model:JobImageConverter x:Key="jic"/>
-                <Style TargetType="GridViewItem">
-                    <Style.Setters>
-                        <Setter Property="Background" Value="WhiteSmoke"/>
-                    </Style.Setters>
-                </Style>
-            </GridView.Resources>
-            <GridView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Padding="10" Width="400" Height="220">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="64"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Image Source="{Binding Job, Converter={StaticResource jic}}" Margin="5"/>
-                        <TextBlock Grid.Column="1" Text="{Binding NameJp}" FontSize="22"/>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Orientation="Horizontal">
-                            <TextBlock Text="{Binding NameCn}"/>
-                            <TextBlock Text="{Binding NameEn}" Margin="5,0"/>
-                        </StackPanel>
-                        <!--<ProgressRing Grid.Column="1" Margin="3" IsIndeterminate="False" IsActive="True"
+        <StackPanel Grid.Row="1" Margin="10">
+            <GridView IsEnabled="{Binding Ready}" Visibility="{Binding SmallIcon,Converter={StaticResource ec},ConverterParameter=True}"
+                      ItemsSource="{Binding Favorite}" CanReorderItems="True" AllowDrop="True">
+                <GridView.Resources>
+                    <model:ColorConverter x:Key="cc" />
+                    <model:JobImageConverter x:Key="jic"/>
+                    <Style TargetType="GridViewItem">
+                        <Style.Setters>
+                            <Setter Property="Background" Value="WhiteSmoke"/>
+                        </Style.Setters>
+                    </Style>
+                </GridView.Resources>
+                <GridView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10" Width="400" Height="220">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="64"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Image Source="{Binding Job, Converter={StaticResource jic}}" Margin="5"/>
+                            <TextBlock Grid.Column="1" Text="{Binding NameJp}" FontSize="22"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Orientation="Horizontal">
+                                <TextBlock Text="{Binding NameCn}"/>
+                                <TextBlock Text="{Binding NameEn}" Margin="5,0"/>
+                            </StackPanel>
+                            <!--<ProgressRing Grid.Column="1" Margin="3" IsIndeterminate="False" IsActive="True"
                                       Value="{Binding Value}" Maximum="{Binding Maximum}"
                                       Foreground="{Binding Active, Converter={StaticResource cc}}"/>-->
-                        <ProgressBar Grid.Row="1" Grid.ColumnSpan="3" Margin="0,5" Value="{Binding Value}" Maximum="{Binding Maximum}" Foreground="{Binding Active, Converter={StaticResource cc}}"/>
-                        <ListView Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding Maps}">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Padding="3">
-                                        <StackPanel Width="180">
-                                            <TextBlock Text="{Binding MapJp}"/>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding MapCn}" FontSize="10"/>
-                                                <TextBlock Text="{Binding MapEn}" FontSize="10" Margin="5,0"/>
-                                            </StackPanel>
-                                            <ProgressBar Value="{Binding Value}" Maximum="{Binding Maximum}" Margin="0,3"
+                            <ProgressBar Grid.Row="1" Grid.ColumnSpan="3" Margin="0,5" Value="{Binding Value}" Maximum="{Binding Maximum}" Foreground="{Binding Active, Converter={StaticResource cc}}"/>
+                            <ListView Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding Maps}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Padding="3">
+                                            <StackPanel Width="180">
+                                                <TextBlock Text="{Binding MapJp}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding MapCn}" FontSize="10"/>
+                                                    <TextBlock Text="{Binding MapEn}" FontSize="10" Margin="5,0"/>
+                                                </StackPanel>
+                                                <ProgressBar Value="{Binding Value}" Maximum="{Binding Maximum}" Margin="0,3"
                                                          Foreground="{Binding Active, Converter={StaticResource cc}}"/>
+                                            </StackPanel>
+                                            <StackPanel Margin="10,0" >
+                                                <TextBlock Text="{Binding TimeSpan}" FontSize="20"/>
+                                                <TextBlock Text="{Binding Position}"/>
+                                            </StackPanel>
                                         </StackPanel>
-                                        <StackPanel Margin="10,0" >
-                                            <TextBlock Text="{Binding TimeSpan}" FontSize="20"/>
-                                            <TextBlock Text="{Binding Position}"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </Grid>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+            <GridView IsEnabled="{Binding Ready}" Visibility="{Binding SmallIcon,Converter={StaticResource ec},ConverterParameter=False}"
+                      ItemsSource="{Binding Favorite}" CanReorderItems="True" AllowDrop="True">
+                <GridView.Resources>
+                    <model:ColorConverter x:Key="cc" />
+                    <model:JobImageConverter x:Key="jic"/>
+                    <Style TargetType="GridViewItem">
+                        <Style.Setters>
+                            <Setter Property="Background" Value="WhiteSmoke"/>
+                        </Style.Setters>
+                    </Style>
+                </GridView.Resources>
+                <GridView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10" Width="220" Height="60">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="32"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Image Source="{Binding Job, Converter={StaticResource jic}}" Margin="5"/>
+                            <TextBlock Grid.Column="1" Text="{Binding NameJp}"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Orientation="Horizontal">
+                                <TextBlock Text="{Binding NameCn}" FontSize="10"/>
+                                <TextBlock Text="{Binding NameEn}" FontSize="10" Margin="5,0"/>
+                            </StackPanel>
+                            <ProgressBar Grid.Row="1" Grid.ColumnSpan="3" Margin="0,5" Value="{Binding Value}" Maximum="{Binding Maximum}" Foreground="{Binding Active, Converter={StaticResource cc}}"/>
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+        </StackPanel>
         <Expander Header="信息查询和设置" Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsExpanded="True">
             <Grid Height="300">
                 <Grid.RowDefinitions>
@@ -146,7 +186,8 @@
                 </GridView>
                 <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Query,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" KeyDown="TextBox_KeyDown"/>
                 <StackPanel Orientation="Horizontal" Grid.Row="1"  Grid.Column="2" Padding="10,0" Background="Gray">
-                    <CheckBox IsChecked="{Binding EnableAlarm}" HorizontalAlignment="Center">启用通知</CheckBox>
+                    <CheckBox IsChecked="{Binding EnableAlarm,Mode=TwoWay}" HorizontalAlignment="Center">启用通知</CheckBox>
+                    <CheckBox IsChecked="{Binding SmallIcon,Mode=TwoWay}" HorizontalAlignment="Center" Margin="10,0">使用小图标</CheckBox>
                 </StackPanel>
             </Grid>
         </Expander>
