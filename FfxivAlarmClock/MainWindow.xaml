@@ -184,10 +184,10 @@
                         </DataTemplate>
                     </GridView.ItemTemplate>
                 </GridView>
-                <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Query,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" KeyDown="TextBox_KeyDown"/>
+                <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Query,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Ready}" KeyDown="TextBox_KeyDown"/>
                 <StackPanel Orientation="Horizontal" Grid.Row="1"  Grid.Column="2" Padding="10,0" Background="Gray">
-                    <CheckBox IsChecked="{Binding EnableAlarm,Mode=TwoWay}" HorizontalAlignment="Center">启用通知</CheckBox>
-                    <CheckBox IsChecked="{Binding SmallIcon,Mode=TwoWay}" HorizontalAlignment="Center" Margin="10,0">使用小图标</CheckBox>
+                    <CheckBox IsChecked="{Binding EnableAlarm,Mode=TwoWay}" HorizontalAlignment="Center" IsEnabled="{Binding Ready}">启用通知</CheckBox>
+                    <CheckBox IsChecked="{Binding SmallIcon,Mode=TwoWay}" HorizontalAlignment="Center" IsEnabled="{Binding Ready}" Margin="10,0">使用小图标</CheckBox>
                 </StackPanel>
             </Grid>
         </Expander>

@@ -61,9 +61,9 @@ namespace FfxivAlarmClock.Models
         /// <returns></returns>
         public static async Task<ItemInfo[]> Load()
         {
+            List<ItemInfo> items = new List<ItemInfo>();
             HttpClient http = new HttpClient();
             string raw = await http.GetStringAsync(new Uri("https://www.kokuryuu.club/static/ffxiv.csv"));
-            List<ItemInfo> items = new List<ItemInfo>();
 
             using (StringReader reader = new StringReader(raw))
             using (CsvHelper.CsvReader csv = new CsvHelper.CsvReader(reader, CultureInfo.InvariantCulture))
@@ -141,7 +141,6 @@ namespace FfxivAlarmClock.Models
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:验证平台兼容性", Justification = "<挂起>")]
         public void ShowAlert(object sender, EventArgs e)
         {
             MapInfo map = Maps.FirstOrDefault();

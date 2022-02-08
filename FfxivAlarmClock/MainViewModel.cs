@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 
 namespace FfxivAlarmClock
 {
@@ -34,7 +35,12 @@ namespace FfxivAlarmClock
         #endregion
 
         #region 显示信息用
-        public bool Ready { get; private set; }
+        private bool ready;
+        public bool Ready
+        {
+            get => ready;
+            private set => SetProperty(ref ready, value);
+        }
         public string EorzeaTimeExp => EorzeaTime.ToString("HH:mm:ss");
         public string LocalTime => DateTime.Now.ToString("T");
         public string LocalDate => DateTime.Now.ToString("d");
@@ -92,7 +98,19 @@ namespace FfxivAlarmClock
         private async void Init()
         {
             // 读取文件
-            allItems = await Models.ItemInfo.Load();
+            try
+            {
+                allItems = await Models.ItemInfo.Load();
+            }
+            catch (Exception ex)
+            {
+                new CommunityToolkit.WinUI.Notifications.ToastContentBuilder()
+                    .AddText("连接失败")
+                    .AddText(ex.Message)
+                    .AddText("请检查网络连接")
+                    .Show();
+                allItems = Array.Empty<Models.ItemInfo>();
+            }
             string[] checkList = await Load();
 
             foreach (var i in allItems)

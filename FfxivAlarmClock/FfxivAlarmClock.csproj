@@ -11,10 +11,12 @@
     <UseWinUI>true</UseWinUI>
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>portable</DebugType>
+    <DebugType>none</DebugType>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-    <PackageCertificateThumbprint>9583EDAE3D20EAEF9A636F09F5DCF6E427080F16</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>E96E8C35AB53C1D69E02C87A668842D91F1A0388</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <DefaultLanguage>zh-CN</DefaultLanguage>
+    <SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\LargeTile.scale-100.png" />

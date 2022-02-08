@@ -9,7 +9,7 @@
   <Identity
     Name="33257Monkeysoft.FF14"
     Publisher="CN=15D41633-DCC0-41F5-B8D5-03914B475477"
-    Version="1.0.0.0" />
+    Version="1.0.2.0" />
 
   <Properties>
     <DisplayName>FF14采集提醒</DisplayName>
